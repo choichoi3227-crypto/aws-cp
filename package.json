@@ -1,0 +1,25 @@
+{
+  "name": "info100-cloudflare-astro",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "wrangler pages dev ./dist",
+    "deploy": "wrangler pages deploy ./dist --project-name info100",
+    "db:migrate:local": "wrangler d1 migrations apply info100-db --local",
+    "db:migrate:prod": "wrangler d1 migrations apply info100-db --remote"
+  },
+  "dependencies": {
+    "@astrojs/check": "latest",
+    "@astrojs/cloudflare": "latest",
+    "@astrojs/sitemap": "latest",
+    "astro": "latest",
+    "typescript": "latest"
+  },
+  "devDependencies": {
+    "wrangler": "latest",
+    "@cloudflare/workers-types": "latest"
+  }
+}

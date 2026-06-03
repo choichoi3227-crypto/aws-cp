@@ -1,0 +1,5 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+const rows = await Astro.locals.runtime.env.DB.prepare('SELECT * FROM support_cache ORDER BY fetched_at DESC LIMIT 100').all<any>();
+---
+<BaseLayout title="정부지원금 수집"><h1>정부지원금 수집</h1><p class="admin-note">이 화면과 검색/수집 버튼은 관리자에게만 표시됩니다. 공개 사용자 화면에는 노출되지 않습니다.</p><form method="post" action="/api/admin/support"><button class="primary-button">실시간 수집</button></form><table class="data-table"><thead><tr><th>제목</th><th>기관</th><th>요약</th><th>수집일</th></tr></thead><tbody>{(rows.results ?? []).map((item) => <tr><td>{item.target_url ? <a href={item.target_url}>{item.title}</a> : item.title}</td><td>{item.agency}</td><td>{item.summary}</td><td>{item.fetched_at}</td></tr>)}</tbody></table></BaseLayout>

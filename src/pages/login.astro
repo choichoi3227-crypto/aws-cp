@@ -1,0 +1,5 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+const next = Astro.url.searchParams.get('next') || '/';
+---
+<BaseLayout title="로그인"><section class="auth-panel"><h1>로그인</h1><form method="post" action="/api/auth/login"><input type="hidden" name="next" value={next} /><label>이메일<input name="email" type="email" required /></label><label>비밀번호<input name="password" type="password" required /></label><button class="primary-button">로그인</button></form><div class="oauth-row"><a class="ghost-button" href="/api/auth/google">Google</a><a class="ghost-button" href="/api/auth/naver">Naver</a></div><p><a href="/signup">회원가입</a></p></section></BaseLayout>

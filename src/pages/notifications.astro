@@ -1,0 +1,6 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+if (!Astro.locals.user) return Astro.redirect('/login?next=/notifications');
+const rows = await Astro.locals.runtime.env.DB.prepare('SELECT * FROM notifications WHERE user_id = ? OR user_id IS NULL ORDER BY created_at DESC LIMIT 50').bind(Astro.locals.user.id).all<any>();
+---
+<BaseLayout title="알림"><h1>알림</h1><div class="content-list">{(rows.results ?? []).map((n) => <article class="content-row"><div><h2>{n.title}</h2><p>{n.message}</p><span>{n.created_at}</span></div></article>)}</div></BaseLayout>

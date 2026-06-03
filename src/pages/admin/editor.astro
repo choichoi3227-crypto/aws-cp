@@ -1,0 +1,50 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { categories } from '@/lib/db';
+const db = Astro.locals.runtime.env.DB;
+const id = Astro.url.searchParams.get('id');
+const item = id ? await db.prepare('SELECT * FROM content WHERE id=?').bind(id).first<any>() : null;
+const cats = await categories(db);
+---
+<BaseLayout title="콘텐츠 편집">
+  <h1>콘텐츠 편집</h1>
+  <form class="editor-layout" method="post" action="/api/admin/content">
+    <input type="hidden" name="id" value={item?.id || ''} />
+    <section class="editor-main">
+      <label>제목<input name="title" value={item?.title || ''} required /></label>
+      <div class="editor-toolbar" aria-label="블록 에디터 도구">
+        <button type="button" data-tag="h2">H2</button>
+        <button type="button" data-tag="h3">H3</button>
+        <button type="button" data-wrap="ul">리스트</button>
+        <button type="button" data-insert="table">표</button>
+        <button type="button" data-class="info-button">버튼</button>
+        <button type="button" data-class="highlight">하이라이트</button>
+        <button type="button" data-tag="a">링크</button>
+      </div>
+      <label>블록/HTML 에디터<textarea id="body_html" name="body_html" rows="20" required>{item?.body_html || ''}</textarea></label>
+      <textarea name="body_blocks" hidden>{item?.body_blocks || ''}</textarea>
+      <label>요약<textarea name="excerpt" rows="4">{item?.excerpt || ''}</textarea></label>
+    </section>
+    <aside class="meta-box">
+      <details open>
+        <summary>발행 설정</summary>
+        <label>유형<select name="type"><option value="post" selected={item?.type !== 'notice' && item?.type !== 'page'}>게시글</option><option value="notice" selected={item?.type === 'notice'}>공지</option><option value="page" selected={item?.type === 'page'}>페이지</option></select></label>
+        <label>상태<select name="status"><option value="draft">초안</option><option value="published" selected={item?.status === 'published'}>게시</option><option value="private" selected={item?.status === 'private'}>비공개</option></select></label>
+        <label>접근<select name="visibility"><option value="public">전체 공개</option><option value="members" selected={item?.visibility === 'members'}>회원 공개</option><option value="admin" selected={item?.visibility === 'admin'}>관리자 전용</option></select></label>
+        <label>카테고리<select name="category_id"><option value="">없음</option>{cats.map((cat) => <option value={cat.id} selected={item?.category_id === cat.id}>{cat.name}</option>)}</select></label>
+        <label>슬러그<input name="slug" value={item?.slug || ''} required /></label>
+        <label>썸네일 URL<input name="thumbnail_url" value={item?.thumbnail_url || ''} /></label>
+        <label>발행일<input name="published_at" type="datetime-local" value={(item?.published_at || '').slice(0,16)} /></label>
+      </details>
+      <details open>
+        <summary>SEO</summary>
+        <label>SEO 제목<input name="seo_title" value={item?.seo_title || ''} /></label>
+        <label>메타 설명<textarea name="seo_description">{item?.seo_description || ''}</textarea></label>
+        <label>키워드<input name="seo_keywords" value={item?.seo_keywords || ''} /></label>
+        <label>스키마 JSON<textarea name="schema_json">{item?.schema_json || ''}</textarea></label>
+      </details>
+      <button class="primary-button">저장</button>
+    </aside>
+  </form>
+  <script is:inline src="/editor.js"></script>
+</BaseLayout>

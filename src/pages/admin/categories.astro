@@ -1,0 +1,6 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { categories } from '@/lib/db';
+const cats = await categories(Astro.locals.runtime.env.DB);
+---
+<BaseLayout title="카테고리 관리"><h1>카테고리 관리</h1><form class="settings-form" method="post" action="/api/admin/categories"><label>이름<input name="name" required /></label><label>슬러그<input name="slug" required /></label><label>상위 카테고리<select name="parent_id"><option value="">없음</option>{cats.map((cat) => <option value={cat.id}>{cat.name}</option>)}</select></label><label>정렬 순서<input name="sort_order" type="number" value="0" /></label><button class="primary-button">추가</button></form><table class="data-table"><thead><tr><th>이름</th><th>슬러그</th><th>상위</th><th>정렬</th></tr></thead><tbody>{cats.map((cat) => <tr><td>{cat.name}</td><td>{cat.slug}</td><td>{cat.parent_id || ''}</td><td>{cat.sort_order}</td></tr>)}</tbody></table></BaseLayout>
