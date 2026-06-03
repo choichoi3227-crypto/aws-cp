@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { settings } from '@/lib/db';
+const s = await settings(Astro.locals.runtime.env.DB);
+---
+<BaseLayout title="SEO/플러그인">
+  <h1>SEO/플러그인</h1>
+  <form class="settings-form" method="post" action="/api/admin/settings">
+    <label>사이트명<input name="site_name" value={s.site_name || '인포100'} /></label>
+    <label>메타 설명<textarea name="site_description">{s.site_description || ''}</textarea></label>
+    <label>사이트 키워드<input name="site_keywords" value={s.site_keywords || ''} /></label>
+    <label>헤더 코드 삽입<textarea name="header_code">{s.header_code || ''}</textarea></label>
+    <label>푸터 코드 삽입<textarea name="footer_code">{s.footer_code || ''}</textarea></label>
+    <label>애드센스 Client ID<input name="adsense_client" value={s.adsense_client || ''} /></label>
+    <label>robots.txt 추가 규칙<textarea name="robots_extra">{s.robots_extra || ''}</textarea></label>
+    <label>캐시 TTL(초)<input name="cache_ttl_seconds" type="number" value={s.cache_ttl_seconds || '300'} /></label>
+    <button class="primary-button">저장</button>
+  </form>
+</BaseLayout>

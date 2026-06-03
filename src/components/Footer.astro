@@ -1,0 +1,16 @@
+---
+interface Props { footerCode?: string; }
+const { footerCode = '' } = Astro.props;
+---
+<footer class="site-footer">
+  <div>
+    <strong>인포100</strong>
+    <p>정확한 정보, 명확한 해설, 오래 읽히는 콘텐츠를 지향합니다.</p>
+  </div>
+  <nav aria-label="하단 메뉴">
+    <a href="/privacy">개인정보처리방침</a>
+    <a href="/disclaimer">면책조항</a>
+    <a href="/about">소개 및 문의</a>
+  </nav>
+  {footerCode && <Fragment set:html={footerCode} />}
+</footer>

@@ -1,0 +1,12 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ContentList from '@/components/ContentList.astro';
+const q = Astro.url.searchParams.get('q')?.trim() || '';
+let items: any[] = [];
+if (q) {
+  const like = `%${q}%`;
+  const rows = await Astro.locals.runtime.env.DB.prepare(`SELECT content.*, categories.name AS category_name, categories.slug AS category_slug FROM content LEFT JOIN categories ON categories.id=content.category_id WHERE content.status='published' AND content.visibility IN ('public','members') AND (content.title LIKE ? OR content.excerpt LIKE ? OR content.body_html LIKE ? OR content.seo_keywords LIKE ?) ORDER BY COALESCE(published_at, created_at) DESC LIMIT 50`).bind(like, like, like, like).all();
+  items = rows.results ?? [];
+}
+---
+<BaseLayout title="검색"><h1>검색</h1><form class="search-box"><input name="q" value={q} placeholder="검색어" /><button class="primary-button">검색</button></form>{q && <ContentList items={items} empty="검색 결과가 없습니다." />}</BaseLayout>

@@ -1,0 +1,31 @@
+---
+import type { Category } from '@/lib/types';
+interface Props { categories: Category[]; user?: App.Locals['user']; }
+const { categories, user } = Astro.props;
+const parents = categories.filter((category) => !category.parent_id);
+const children = (id: number) => categories.filter((category) => category.parent_id === id);
+---
+<header class="site-header">
+  <a class="brand" href="/" aria-label="인포100 홈">인포100</a>
+  <nav class="main-nav" aria-label="주 메뉴">
+    <a href="/notices">공지</a>
+    <div class="nav-dropdown">
+      <a href="/posts">게시글</a>
+      <div class="dropdown-panel">
+        {parents.map((parent) => (
+          <div class="dropdown-row">
+            <a href={`/category/${parent.slug}`}>{parent.name}</a>
+            {children(parent.id).length > 0 && <div class="dropdown-subpanel">{children(parent.id).map((child) => <a href={`/category/${child.slug}`}>{child.name}</a>)}</div>}
+          </div>
+        ))}
+      </div>
+    </div>
+    <a href="/search">검색</a>
+    <a href="/about">소개 및 문의</a>
+  </nav>
+  <div class="header-actions">
+    {user ? <a class="action-link" href="/notifications">알림</a> : null}
+    {user?.role === 'admin' || user?.role === 'editor' ? <a class="action-link" href="/admin">관리자</a> : null}
+    {user ? <form method="post" action="/api/auth/logout"><button class="ghost-button">로그아웃</button></form> : <><a class="ghost-button" href="/login">로그인</a><a class="primary-button" href="/signup">회원가입</a></>}
+  </div>
+</header>

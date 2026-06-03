@@ -1,0 +1,25 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ContentList from '@/components/ContentList.astro';
+import { getContentBySlug, relatedContent } from '@/lib/db';
+const item = await getContentBySlug(Astro.locals.runtime.env.DB, Astro.params.slug!, 'notice');
+if (!item || item.status !== 'published') return Astro.redirect('/404');
+if (item.visibility === 'members' && !Astro.locals.user) return Astro.redirect('/login?next=' + encodeURIComponent(Astro.url.pathname));
+if (item.visibility === 'admin' && Astro.locals.user?.role !== 'admin') return Astro.redirect('/login?next=' + encodeURIComponent(Astro.url.pathname));
+await Astro.locals.runtime.env.DB.prepare('UPDATE content SET views = views + 1 WHERE id = ?').bind(item.id).run();
+if (item.views < 2000 && item.views + 1 >= 2000) {
+  await Astro.locals.runtime.env.DB.prepare("INSERT INTO notifications(user_id,title,message,content_id) SELECT id, ?, ?, ? FROM users WHERE role IN ('member','admin','editor')").bind('인기 글 알림', `조회수 2,000회를 넘긴 글: ${item.title}`, item.id).run();
+}
+const related = await relatedContent(Astro.locals.runtime.env.DB, item);
+const schema = item.schema_json ? JSON.parse(item.schema_json) : { '@context': 'https://schema.org', '@type': 'NewsArticle', headline: item.title, description: item.seo_description || item.excerpt, datePublished: item.published_at, dateModified: item.updated_at };
+---
+<BaseLayout title={item.seo_title || item.title} description={item.seo_description || item.excerpt || item.title} keywords={item.seo_keywords || undefined} schema={schema}>
+  <article class="article-view">
+    <p class="eyebrow">{item.category_name || '공지'}</p>
+    <h1>{item.title}</h1>
+    <div class="article-meta">{item.published_at?.slice(0, 10) || item.created_at.slice(0, 10)} · 조회 {(item.views + 1).toLocaleString('ko-KR')}</div>
+    {item.thumbnail_url && <img class="article-thumbnail" src={item.thumbnail_url} alt="" />}
+    <div class="article-body" set:html={item.body_html} />
+  </article>
+  <section><h2>관련 글</h2><ContentList items={related} empty="관련 공지가 없습니다." basePath="/notices" /></section>
+</BaseLayout>

@@ -1,0 +1,7 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ContentList from '@/components/ContentList.astro';
+import { publicContent } from '@/lib/db';
+const notices = await publicContent(Astro.locals.runtime.env.DB, 'notice', 50);
+---
+<BaseLayout title="공지"><h1>공지</h1><ContentList items={notices} empty="아직 공개된 공지가 없습니다." basePath="/notices" /></BaseLayout>

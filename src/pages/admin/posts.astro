@@ -1,0 +1,5 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+const rows = await Astro.locals.runtime.env.DB.prepare('SELECT content.*, categories.name AS category_name FROM content LEFT JOIN categories ON categories.id=content.category_id ORDER BY updated_at DESC LIMIT 100').all<any>();
+---
+<BaseLayout title="글 관리"><h1>글 관리</h1><p><a class="primary-button" href="/admin/editor">새 콘텐츠 작성</a></p><table class="data-table"><thead><tr><th>제목</th><th>유형</th><th>상태</th><th>공개</th><th>카테고리</th><th>수정</th></tr></thead><tbody>{(rows.results ?? []).map((item) => <tr><td><a href={`/admin/editor?id=${item.id}`}>{item.title}</a></td><td>{item.type}</td><td>{item.status}</td><td>{item.visibility}</td><td>{item.category_name}</td><td>{item.updated_at}</td></tr>)}</tbody></table></BaseLayout>

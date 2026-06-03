@@ -1,0 +1,4 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+<BaseLayout title="회원가입"><section class="auth-panel"><h1>회원가입</h1><form method="post" action="/api/auth/signup"><label>이름<input name="name" required /></label><label>이메일<input name="email" type="email" required /></label><label>비밀번호<input name="password" type="password" minlength="10" required /></label><button class="primary-button">가입하기</button></form><div class="oauth-row"><a class="ghost-button" href="/api/auth/google">Google</a><a class="ghost-button" href="/api/auth/naver">Naver</a></div></section></BaseLayout>

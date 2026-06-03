@@ -1,0 +1,9 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ContentList from '@/components/ContentList.astro';
+const db = Astro.locals.runtime.env.DB;
+const category = await db.prepare('SELECT * FROM categories WHERE slug = ?').bind(Astro.params.slug).first<{ id:number; name:string; slug:string }>();
+if (!category) return Astro.redirect('/404');
+const rows = await db.prepare(`SELECT content.*, categories.name AS category_name, categories.slug AS category_slug FROM content LEFT JOIN categories ON categories.id = content.category_id WHERE content.category_id = ? AND content.status='published' AND content.visibility IN ('public','members') ORDER BY COALESCE(published_at, created_at) DESC`).bind(category.id).all();
+---
+<BaseLayout title={category.name} description={`${category.name} 카테고리의 최신 정보`}><h1>{category.name}</h1><ContentList items={rows.results as any} empty="이 카테고리에 공개된 글이 없습니다." /></BaseLayout>

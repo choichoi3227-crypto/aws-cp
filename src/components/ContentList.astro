@@ -1,0 +1,6 @@
+---
+import type { ContentItem } from '@/lib/types';
+interface Props { items: ContentItem[]; empty: string; basePath?: string; }
+const { items, empty, basePath } = Astro.props;
+---
+{items.length === 0 ? <p class="empty-state">{empty}</p> : <div class="content-list">{items.map((item) => <article class="content-row"><div><p class="eyebrow">{item.category_name || (item.type === 'notice' ? '공지' : '게시글')}</p><h2><a href={`${basePath || (item.type === 'notice' ? '/notices' : '/posts')}/${item.slug}`}>{item.title}</a></h2>{item.excerpt && <p>{item.excerpt}</p>}<span>{item.published_at?.slice(0, 10) || item.created_at.slice(0, 10)} · 조회 {item.views.toLocaleString('ko-KR')}</span></div>{item.thumbnail_url && <img src={item.thumbnail_url} alt="" loading="lazy" />}</article>)}</div>}

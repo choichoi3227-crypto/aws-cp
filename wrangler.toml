@@ -1,0 +1,18 @@
+name = "info100"
+compatibility_date = "2026-06-03"
+pages_build_output_dir = "dist"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "info100-db"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[vars]
+SITE_URL = "https://info100.kr"
+SITE_NAME = "인포100"
+ADMIN_EMAIL = "choichoi3227@gmail.com"
+SUPPORT_XML_ENDPOINT = "https://www.gov.kr/portal/rcvfvrSvc/main"
+GITHUB_OWNER = "REPLACE_WITH_GITHUB_OWNER"
+GITHUB_REPO = "REPLACE_WITH_GITHUB_REPO"
+GITHUB_BRANCH = "main"
